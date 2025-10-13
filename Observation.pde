@@ -15,6 +15,6 @@ class Observation{
   this.notes = notes;
   }
   public String toString() {
-    return date + " | " + time + " | " + emotion + " | " + activity + " | " + overall_mood + " | " + notes;
+    return date + " | " + time + " | " + emotion + " | " + activity + " | " + overall_mood + " | " + notes + "\n";
   }
 }
