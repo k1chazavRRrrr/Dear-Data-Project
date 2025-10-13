@@ -1,6 +1,7 @@
 import java.util.*;
 ArrayList<String> uniqueDates = new ArrayList<String>();
 HashMap<String, ArrayList<Observation>> byDate = new HashMap<>();
+HashMap<String, Daystats> statistics = new HashMap<>();
 
 int selectIndex = 0;
 
@@ -33,8 +34,15 @@ void fileUnpackage() {
     String activity = tokens[3];
     int overall_mood = int(tokens[4]);
     String notes = tokens[5];
+    
     Observation obs = new Observation(date, time, emotion, activity, overall_mood, notes);
-    Daystats stats = new Daystats(date);
+     if (!statistics.containsKey(date)) {
+        statistics.put(date, new Daystats(date));
+    }
+    
+      statistics.get(date).addObservation(obs);
+      
+      
       if(!byDate.containsKey(date)){
         byDate.put(date, new ArrayList<Observation>());
         uniqueDates.add(date);
@@ -43,7 +51,8 @@ void fileUnpackage() {
     } 
      println("There are:  " + dear_data.length + " observations" );
     uniqueDates.sort(null);
-    stats.debug;
+    
+    
 }
 void keyPressed(){
   loop();
