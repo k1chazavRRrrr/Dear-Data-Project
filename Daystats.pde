@@ -1,4 +1,5 @@
 class Daystats   {
+
   String date;
   int countforavg = 0;
   float sumMood;
