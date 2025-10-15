@@ -1,3 +1,5 @@
 Idea
-(tbd)
+Challenges
+Pros
+Potential Cons
 AI Usage
