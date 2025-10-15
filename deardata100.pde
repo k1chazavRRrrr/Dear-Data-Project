@@ -34,7 +34,7 @@ float day_button_w = 65;
 float day_button_h;
 
 void setup() {
-  size(900, 800);
+  size(800, 700);
   fileUnpackage();
   left_panel_h = height - (left_panel_y * 2);
   graph_panel_w = width - graph_panel_x  - left_panel_x;
@@ -114,7 +114,6 @@ void fileUnpackage() {
   total_days = uniqueDates.size();
 }
 void keyPressed() {
-  loop();
   int idx = selectIndex;
   if (key == CODED) {
     if (keyCode == UP) {
@@ -124,4 +123,5 @@ void keyPressed() {
     }
   }
   selectIndex = constrain(idx, 0, uniqueDates.size() - 1);
+  redraw();
 }
