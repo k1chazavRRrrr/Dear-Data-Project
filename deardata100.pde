@@ -6,7 +6,8 @@ HashMap<String, ArrayList<Observation>> byDate = new HashMap<>();
 // To Store all Observations according to Date - Observation
 HashMap<String, Daystats> statistics = new HashMap<>();
 // To store Statistics for a certain day, eg date - overall_mood
-
+ArrayList<DayButton> day_buttons = new ArrayList<>();
+//To store Button object and work with them
 
 int selectIndex = 0; // Index to choose date
 int total_days = 0;
@@ -14,9 +15,7 @@ int margin = 8;
 
 color background = #F4F1ED;
 color leftpanel = #E9ECEF;
-color activebutton = #A5C8FF;
-color sleepbutton = #C8DEE3;
-color text_color = #2C2C2C;
+
 
 float left_panel_x = 20;
 float left_panel_y = 50;
@@ -39,42 +38,43 @@ void setup() {
   left_panel_h = height - (left_panel_y * 2);
   graph_panel_w = width - graph_panel_x  - left_panel_x;
   graph_panel_h = left_panel_h;
+  draw_day_Buttons();
 }
 void draw() {
   background(background);
   draw_gui();
   daySelect();
-  noLoop();
 }
-void draw_gui() {
+
+void draw_day_Buttons() {
+
   int rowsPerCol = 15;
-  noStroke();
-  fill(leftpanel);
-  rect(left_panel_x, left_panel_y, left_panel_w, left_panel_h, 10);
-  rect(graph_panel_x, graph_panel_y, graph_panel_w, graph_panel_h, 10);
   day_button_h = (left_panel_h - (rowsPerCol+2)*margin) / rowsPerCol;
   for (int i = 0; i < total_days; i++) {
     int row = i % rowsPerCol;
     int col = i / rowsPerCol;
     float x  = day_button_x + margin + col * ( margin + day_button_w);
     float y = day_button_y + margin + row * ( margin + day_button_h);
-    if (i == selectIndex ) {
-      fill(activebutton);
-    } else {
-      fill(sleepbutton);
-    }
-    rect(x, y, day_button_w, day_button_h, 6);
-    fill(text_color);
-    textAlign(CENTER, CENTER);
-    text("Day - " + (i+ 1), x + day_button_w/2, y + day_button_h/2);
+    day_buttons.add(new DayButton(x, y, day_button_w, day_button_h, i));
+  }
+}
+void draw_gui() {
+  noStroke();
+  fill(leftpanel);
+  rect(left_panel_x, left_panel_y, left_panel_w, left_panel_h, 10);
+  rect(graph_panel_x, graph_panel_y, graph_panel_w, graph_panel_h, 10);
+  
+  for ( DayButton d : day_buttons){
+    d.update();
+    d.display();
   }
 }
 void daySelect() { // Output Info about Day's Observations
   String day = uniqueDates.get(selectIndex);
   ArrayList<Observation> daylist = byDate.get(day);
-   //Make an Arraylist with observation according to choosen date for further use
+  //Make an Arraylist with observation according to choosen date for further use
   println("Day - " + day);
-  for(Observation d : daylist){ // Going through ArrayList
+  for (Observation d : daylist) { // Going through ArrayList
     println(d.time + " " + d.emotion +  " "  + d.notes);
   }
 }
@@ -116,12 +116,16 @@ void fileUnpackage() {
 void keyPressed() {
   int idx = selectIndex;
   if (key == CODED) {
-    if (keyCode == UP) {
+    if (keyCode == DOWN) {
       idx++;
-    } else if (keyCode == DOWN) {
+    } else if (keyCode == UP) {
       idx--;
     }
   }
   selectIndex = constrain(idx, 0, uniqueDates.size() - 1);
-  redraw();
+}
+void mousePressed(){
+for ( DayButton d : day_buttons){
+    if (d.isHovered) selectIndex = d.idx;
+  }
 }
