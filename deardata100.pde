@@ -13,7 +13,7 @@ int selectIndex = 0; // Index to choose date
 int total_days = 0;
 int margin = 8;
 
-color background = #F4F1ED;
+color bground = #F4F1ED;
 color leftpanel = #E9ECEF;
 color timeline = #D3D3D3;
 
@@ -31,7 +31,7 @@ float timeline_panel_x = graph_panel_x + 50;
 float timeline_panel_y;
 float timeline_panel_w;
 float timeline_panel_h = 10;
- 
+
 
 float day_button_x = left_panel_x + margin;
 float day_button_y = left_panel_y + margin;
@@ -39,27 +39,25 @@ float day_button_w = 65;
 float day_button_h;
 
 void setup() {
-  
+
   size(800, 700);
   fileUnpackage();
   left_panel_h = height - (left_panel_y * 2);
-  
+
   graph_panel_w = width - graph_panel_x  - left_panel_x;
   graph_panel_h = left_panel_h;
-  
-  timeline_panel_y = graph_panel_h - 50;
+
+  timeline_panel_y = graph_panel_y + graph_panel_h - 50;
   timeline_panel_w = graph_panel_w - 100;
 
   createDayButtons();
-  
 }
 void draw() {
-  
-  background(background);
+
+  background(bground);
   draw_gui();
   daySelect();
   draw_graph();
-  
 }
 
 void createDayButtons() {
@@ -77,7 +75,7 @@ void createDayButtons() {
 void draw_gui() {
   noStroke();
   fill(leftpanel);
-  
+
   rect(left_panel_x, left_panel_y, left_panel_w, left_panel_h, 10);
   rect(graph_panel_x, graph_panel_y, graph_panel_w, graph_panel_h, 10);
   fill(timeline);
@@ -85,26 +83,43 @@ void draw_gui() {
   float trianglex = timeline_panel_x + timeline_panel_w;
   float triangley = timeline_panel_y + timeline_panel_h / 2;
   float s = 8;
-  triangle(trianglex - s, triangley -s , trianglex - s, triangley + s, trianglex + s, triangley);
-  for ( DayButton d : day_buttons){
+  triangle(trianglex - s, triangley -s, trianglex - s, triangley + s, trianglex + s, triangley);
+  for ( DayButton d : day_buttons) {
     d.update();
     d.display();
   }
 }
-void draw_graph(){
+void draw_graph() {
+  stroke(120);
+  HashSet<Integer> set = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
+  for (int i = 0; i <= 24; i+=6) {
+    float tx = timeline_panel_x + (i /25.0) * timeline_panel_w;
+    line(tx, timeline_panel_y-5, tx, timeline_panel_y+timeline_panel_h + 5);
+    textAlign(CENTER, BOTTOM);
+    text(i, tx, timeline_panel_y - 6);
+  }
   String day = uniqueDates.get(selectIndex);
   ArrayList<Observation> daylist = byDate.get(day);
-  ArrayList<String> timelist = new ArrayList<>();
-  circle(timeline_panel_x + (timeline_panel_w / 4),timeline_panel_y + timeline_panel_h / 2, 13 );
-  circle(timeline_panel_x + (timeline_panel_w / 2),timeline_panel_y + timeline_panel_h / 2, 13 );
-  circle(timeline_panel_x + (timeline_panel_w * 3 / 4 ),timeline_panel_y + timeline_panel_h / 2, 13 );
-
+  ArrayList<Integer> timebubbles = new ArrayList<>();
+  for (Observation d : daylist) {
+    int hour = Integer.parseInt(d.time);
+    timebubbles.add(hour);
+  }
+  noStroke();
+  float actions_bubbles_y = timeline_panel_y + timeline_panel_h/2;
+  for (int i = 0; i < daylist.size(); i++) {
+    //println(timebubbles.get(i));
+    float x = timeline_panel_x + (timebubbles.get(i) / 25.0) * timeline_panel_w;
+    fill(daylist.get(i).activitycolor);
+    circle(x, actions_bubbles_y, 15);
+    if (!set.contains(timebubbles.get(i))) text(daylist.get(i).time, x, actions_bubbles_y-15);
+    text(daylist.get(i).activity, x, actions_bubbles_y+20);
+  }
   //for(Observation d : daylist){
   // String[] time_tokens = split(d.time, ":");
   // timelist.add(time_tokens[0]);
   //}
   //println(day);
-  
 }
 void daySelect() { // Output Info about Day's Observations
   String day = uniqueDates.get(selectIndex);
@@ -117,7 +132,7 @@ void daySelect() { // Output Info about Day's Observations
 }
 void fileUnpackage() {
   int MINIMUM_TOKENS = 6; // at least 6 entries in table
-    String[] dear_data = loadStrings("data.csv"); // All lines with  ,
+  String[] dear_data = loadStrings("data.csv"); // All lines with  ,
 
   for (int i = 1; i < dear_data.length; i++) { // Through Words lines[i] - word
 
@@ -163,9 +178,8 @@ void keyPressed() {
   }
   selectIndex = constrain(idx, 0, uniqueDates.size() - 1);
 }
-void mousePressed(){
-  println(mouseX, mouseY); //730 540  - 740 550 - 750 540
-for ( DayButton d : day_buttons){
+void mousePressed() {
+  for ( DayButton d : day_buttons) {
     if (d.isHovered) selectIndex = d.idx;
   }
 }
