@@ -8,6 +8,8 @@ HashMap<String, Daystats> statistics = new HashMap<>();
 // To store Statistics for a certain day, eg date - overall_mood
 ArrayList<DayButton> day_buttons = new ArrayList<>();
 //To store Button object and work with them
+HashMap<String, ArrayList<Point>> graph_points = new HashMap<>();
+
 
 int selectIndex = 0; // Index to choose date
 int total_days = 0;
@@ -41,7 +43,6 @@ float day_button_h;
 void setup() {
 
   size(800, 700);
-  fileUnpackage();
   left_panel_h = height - (left_panel_y * 2);
 
   graph_panel_w = width - graph_panel_x  - left_panel_x;
@@ -49,14 +50,13 @@ void setup() {
 
   timeline_panel_y = graph_panel_y + graph_panel_h - 50;
   timeline_panel_w = graph_panel_w - 100;
-
+  fileUnpackage();
   createDayButtons();
 }
 void draw() {
 
   background(bground);
   draw_gui();
-  daySelect();
   draw_graph();
 }
 
@@ -90,46 +90,39 @@ void draw_gui() {
   }
 }
 void draw_graph() {
+  pushStyle();
+  strokeWeight(2);
   stroke(120);
-  HashSet<Integer> set = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
+  
+  HashSet<Integer> majorHours = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
   for (int i = 0; i <= 24; i+=6) {
     float tx = timeline_panel_x + (i /25.0) * timeline_panel_w;
     line(tx, timeline_panel_y-5, tx, timeline_panel_y+timeline_panel_h + 5);
     textAlign(CENTER, BOTTOM);
     text(i, tx, timeline_panel_y - 6);
   }
-  String day = uniqueDates.get(selectIndex);
-  ArrayList<Observation> daylist = byDate.get(day);
-  ArrayList<Integer> timebubbles = new ArrayList<>();
-  for (Observation d : daylist) {
-    int hour = Integer.parseInt(d.time);
-    timebubbles.add(hour);
+  popStyle();
+  ArrayList<Point> current_points = graph_points.get(uniqueDates.get(selectIndex));
+  
+  pushStyle();
+  stroke(120);
+  strokeWeight(6);
+  for (int i = 1; i < current_points.size(); i++) {
+    line(current_points.get(i -1).x, current_points.get(i -1).y, current_points.get(i).x, current_points.get(i).y);
   }
+  popStyle();
+  pushStyle();
   noStroke();
-  float actions_bubbles_y = timeline_panel_y + timeline_panel_h/2;
-  for (int i = 0; i < daylist.size(); i++) {
-    //println(timebubbles.get(i));
-    float x = timeline_panel_x + (timebubbles.get(i) / 25.0) * timeline_panel_w;
-    fill(daylist.get(i).activitycolor);
-    circle(x, actions_bubbles_y, 15);
-    if (!set.contains(timebubbles.get(i))) text(daylist.get(i).time, x, actions_bubbles_y-15);
-    text(daylist.get(i).activity, x, actions_bubbles_y+20);
+  textAlign(CENTER, CENTER);
+  for (Point d : current_points) {
+
+    circle(d.x, timeline_panel_y + timeline_panel_h/2, 16);
+    if (!majorHours.contains(d.hour)) text(d.hour, d.x,timeline_panel_y + timeline_panel_h/2 - 14);
+    circle(d.x, d.y, 15);
   }
-  //for(Observation d : daylist){
-  // String[] time_tokens = split(d.time, ":");
-  // timelist.add(time_tokens[0]);
-  //}
-  //println(day);
+  popStyle();
 }
-void daySelect() { // Output Info about Day's Observations
-  String day = uniqueDates.get(selectIndex);
-  ArrayList<Observation> daylist = byDate.get(day);
-  //Make an Arraylist with observation according to choosen date for further use
-  //println("Day - " + day);
-  //for (Observation d : daylist) { // Going through ArrayList
-  //  println(d.time + " " + d.emotion +  " "  + d.notes);
-  //}
-}
+
 void fileUnpackage() {
   int MINIMUM_TOKENS = 6; // at least 6 entries in table
   String[] dear_data = loadStrings("data.csv"); // All lines with  ,
@@ -155,6 +148,10 @@ void fileUnpackage() {
 
     statistics.get(date).addObservation(obs);
 
+    if (!graph_points.containsKey(date)) {
+      graph_points.put(date, new ArrayList<Point>());
+    }
+    graph_points.get(date).add(new Point(Integer.parseInt(hour), activity, emotion, overall_mood));
     //Making statement with day's Observations Hashmap filling
     if (!byDate.containsKey(date)) {
       byDate.put(date, new ArrayList<Observation>());
