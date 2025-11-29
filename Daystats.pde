@@ -8,9 +8,7 @@ class Daystats   {
   Daystats(String date){ //To ensure that all stats will be at the same date
   this.date = date;
   }
-  
-
-  
+ 
   void addObservation(Observation day){
    //AvgMood count
  

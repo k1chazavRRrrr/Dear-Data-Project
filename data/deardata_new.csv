@@ -1,0 +1,102 @@
+﻿date,time,emotion,activity,overall_mood,notes
+25/9/25,10:00,Tired,mrn,3,Waking up
+25/9/25,13:00,Unproductive,st,4,Study time
+25/9/25,14:00,Productive,st,5,Focus returned
+25/9/25,17:00,Chill,sh,5,Shopping
+25/9/25,19:00,Chill,go,5,Going out
+25/9/25,20:00,Chill,ga,5,Gaming (sleepy)
+25/9/25,22:00,Tired,evn,5,Evening routine
+26/9/25,07:00,Motivated,mrn,6,Early wake
+26/9/25,11:00,Productive,le,7,Lecture
+26/9/25,13:00,Happy,go,7,Going out
+26/9/25,15:00,Productive,st,7,Study time
+26/9/25,19:00,Chill,ga,7,Gaming (tired)
+26/9/25,24:00:00,Tired,evn,7,Evening routine
+27/9/25,11:00,Tired,mrn,4,Sleepy morning
+27/9/25,12:00,Tired,go,5,Going out (sleepy)
+27/9/25,15:00,Chill,sh,6,Shopping
+27/9/25,17:00,Unproductive,st,5,Study time
+27/9/25,19:00,Happy,ga,6,Gaming (chill/happy)
+27/9/25,22:00,Tired,evn,5,Evening routine
+28/9/25,07:00,Motivated,mrn,6,Waking up
+28/9/25,10:00,Productive,st,7,Good study block
+28/9/25,14:00,Happy,go,7,Going out
+28/9/25,16:00,Chill,ga,6,Gaming
+28/9/25,21:00,Tired,evn,5,Evening routine
+29/9/25,07:00,Motivated,mrn,6,Chill/Motivated
+29/9/25,09:00,Productive,le,7,Lecture
+29/9/25,13:00,Productive,st,7,Productive study
+29/9/25,16:00,Happy,g,8,Gym
+29/9/25,20:00,Chill,ga,6,Gaming
+29/9/25,22:00,Tired,evn,5,Evening routine
+30/9/25,12:00,Anxious,mrn,3,"Woke up late, unwell"
+30/9/25,15:00,Unproductive,st,4,Low focus
+30/9/25,17:00,Unproductive,ga,4,Distracted gaming
+30/9/25,21:00,Tired,evn,3,Low energy evening
+1/10/25,07:00,Tired,mrn,5,Morning rise
+1/10/25,12:00,Unproductive,le,4,Low energy lecture (wave dip)
+1/10/25,13:00,Productive,st,5,Recovered to neutral
+1/10/25,18:00,Nostalgic,go,6,Going out
+1/10/25,24:00:00,Tired,evn,5,Evening routine
+2/10/25,07:00,Chill,mrn,6,Steady start
+2/10/25,12:00,Productive,st,6,Study
+2/10/25,18:00,Chill,ga,6,Gaming
+2/10/25,24:00:00,Tired,evn,5,Evening routine
+3/10/25,07:00,Motivated,mrn,6,Morning
+3/10/25,09:00,Productive,le,6,Lecture
+3/10/25,12:00,Productive,lt,6,Lab/Tutorial
+3/10/25,18:00,Chill,ga,6,Gaming
+3/10/25,24:00:00,Chill,evn,5,Evening routine
+4/10/25,12:00,Chill,mrn,5,Late morning
+4/10/25,18:00,Chill,sh,6,Shopping
+4/10/25,20:00,Chill,ga,6,Gaming
+4/10/25,24:00:00,Chill,evn,5,Evening routine
+5/10/25,06:00,Chill,mrn,5,Morning
+5/10/25,12:00,Motivated,g,7,Gym
+5/10/25,18:00,Chill,ga,6,Gaming
+5/10/25,24:00:00,Tired,evn,5,Evening routine
+6/10/25,07:00,Chill,mrn,5,Morning
+6/10/25,09:00,Productive,le,6,Lecture
+6/10/25,12:00,Productive,lt,6,Lab/Tutorial
+6/10/25,18:00,Motivated,g,7,Gym
+6/10/25,21:00,Happy,go,6,Going out
+6/10/25,24:00:00,Chill,evn,5,Evening routine
+7/10/25,06:00,Tired,mrn,5,Morning
+7/10/25,12:00,Productive,st,6,Study
+7/10/25,18:00,Nostalgic,go,6,Going out
+7/10/25,24:00:00,Tired,evn,5,Evening routine
+8/10/25,06:00,Chill,mrn,5,Morning
+8/10/25,12:00,Motivated,g,7,Gym
+8/10/25,18:00,Chill,ga,6,Gaming
+8/10/25,24:00:00,Chill,evn,5,Evening routine
+9/10/25,07:00,Chill,mrn,5,Morning
+9/10/25,12:00,Productive,st,6,Study
+9/10/25,18:00,Happy,go,6,Going out
+9/10/25,24:00:00,Tired,evn,5,Evening routine
+10/10/25,11:00,Motivated,mrn,6,Good Morning
+10/10/25,12:00,Nostalgic,go,6,Going out
+10/10/25,14:00,Chill,sh,6,Shopping
+10/10/25,15:00,Productive,lt,6,Lab/Tutorial
+10/10/25,16:00,Productive,lt,6,Lab/Tutorial
+10/10/25,18:00,Happy,go,7,Going out
+10/10/25,24:00:00,Tired,evn,7,Evening routine
+11/10/25,10:00,Chill,mrn,5,Morning rise
+11/10/25,13:00,Unproductive,g,5,Gym
+11/10/25,15:00,Chill,ga,6,Gaming (chill/happy)
+11/10/25,17:00,Productive,st,6,Study time
+11/10/25,19:00,Chill,go,5,Going out
+11/10/25,22:00,Tired,evn,5,Evening routine
+12/10/25,10:00,Chill,mrn,6,Morning
+12/10/25,13:00,Happy,go,7,Going out
+12/10/25,16:00,Chill,ga,7,Gaming (chill/happy)
+12/10/25,22:00,Chill,evn,7,Evening routine
+13/10/25,07:00,Motivated,mrn,6,Morning
+13/10/25,09:00,Productive,le,6,Lecture
+13/10/25,13:00,Productive,lt,7,Lab/Tutorial
+13/10/25,15:00,Productive,g,7,Gym
+13/10/25,18:00,Tired,ga,7,Gaming (tired)
+13/10/25,24:00:00,Tired,evn,6,Evening routine
+14/10/25,12:00,Anxious,mrn,4,Morning
+14/10/25,14:00,Tired,sh,5,Shopping
+14/10/25,18:00,Nostalgic,go,5,Going out
+14/10/25,22:00,Tired,evn,5,Evening routine
