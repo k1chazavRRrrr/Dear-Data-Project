@@ -117,7 +117,7 @@ class Point {
   boolean isHovered(){
     float x = hourToX(hour);
     float y = moodToY(overall_mood);
-    return mouseX >= x - 6 &&  mouseX <= x +6 && mouseY >= y - 6 && mouseY <= y + 6;
+    return mouseX >= x - 6 &&  mouseX <= x +6 && mouseY >= y - 8 && mouseY <= y + 8;
   }
   void update(){
     isHovered = isHovered();

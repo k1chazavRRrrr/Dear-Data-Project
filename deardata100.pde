@@ -15,6 +15,8 @@ int selectIndex = 0; // Index to choose date
 int total_days = 0;
 int margin = 8;
 boolean isLegendOn = false;
+boolean isStatsOn = false;
+
 boolean isAnimating = false;
 float animationA = 1;
 float animationB = animationA;
@@ -50,8 +52,13 @@ float day_button_h;
 
 float legend_button_x;
 float legend_button_y;
-float legend_button_w = 125;
+float legend_button_w;
 float legend_button_h;
+
+float summary_button_x ;
+float summary_button_y ;
+float summary_button_w ;
+float summary_button_h;
 void setup() {
 
   size(900, 700); // Resolution CAN be changed to more convenient
@@ -68,6 +75,11 @@ void setup() {
   legend_button_y = timeline_panel_y + timeline_panel_h + 30;
   legend_button_h = graph_panel_y + graph_panel_h - (timeline_panel_y + timeline_panel_h) - 60 ;
 
+  summary_button_x = timeline_panel_x + 10;
+  summary_button_y = legend_button_y;
+  summary_button_w = timeline_panel_w / 5;
+  summary_button_h = graph_panel_y + graph_panel_h - (timeline_panel_y + timeline_panel_h) - 60 ;
+
   fileUnpackage();
   createDayButtons();
   changeDayAnimation();
@@ -79,13 +91,14 @@ void draw() {
 
   draw_gui();
   draw_graph();
-  legend_button();
+  legendButton();
+  summaryButton();
   if (isAnimating) {
     pushStyle();
     noStroke();
     fill(timeline);
     rect(graph_panel_x, graph_panel_y, graph_panel_w * animationA, graph_panel_h, 10);
-    fill(#A9A9A9);
+    fill(#A9A9A9, 40);
     rect(graph_panel_x, graph_panel_y, (graph_panel_w - graph_panel_w * 0.05) * animationB, graph_panel_h, 10);
 
     popStyle();
@@ -172,8 +185,8 @@ void draw_gui() {
   popStyle();
 }
 
-void legend_button() {
-
+void legendButton() {
+  legend_button_w = timeline_panel_w / 5;
   pushStyle();
   noStroke();
   textAlign(CENTER, CENTER);
@@ -190,6 +203,38 @@ void legend_button() {
   if (isLegendOn) {
     legendInfo();
   }
+}
+void summaryButton() {
+
+  pushStyle();
+  noStroke();
+  textAlign(CENTER, CENTER);
+  if (isStatsHovered())fill(255);
+  else fill(timeline);
+  rect(summary_button_x, summary_button_y, summary_button_w, summary_button_h, 5);
+  pushStyle();
+  fill(0);
+  textSize(14);
+  text("Statistics", summary_button_x + summary_button_w/2, summary_button_y + summary_button_h/2);
+  popStyle();
+  popStyle();
+  if (isStatsOn) {
+    summaryWindow();
+    showStats();
+  }
+}
+void summaryWindow() {
+  int padding = 10;
+  float summary_panel_x = graph_panel_x + padding;
+  float summary_panel_y = graph_panel_y + padding;
+  float summary_panel_h = graph_panel_h / 4;
+  float summary_panel_w =   graph_panel_w - (padding*2);
+  pushStyle();
+  noStroke();
+  fill(160, 120);
+  rect(summary_panel_x, summary_panel_y, summary_panel_w, summary_panel_h, 5);
+    
+  popStyle();
 }
 void legendInfo() {
 
@@ -226,7 +271,6 @@ void legendInfo() {
   float graph_instruction_section_x = activity_section_x + activity_section_w;
   float graph_instruction_section_y = innerY + pad;
   float graph_instruction_section_w = innerW * 0.24;
-  float graph_instruction_section_h = innerH - pad*2 ;
 
   String[] instructions = {"Y - Axis -> Overall Mood at the moment",
     "X - Axis -> Timeline",
@@ -316,10 +360,12 @@ void legendInfo() {
   }
   popStyle();
 }
-void draw_moodline() {
-}
+
 boolean isLegendHovered() {
   return ((mouseX >= legend_button_x && mouseX <= legend_button_x + legend_button_w) && mouseY >= legend_button_y && mouseY <= legend_button_y + legend_button_h);
+}
+boolean isStatsHovered() {
+  return ((mouseX >= summary_button_x && mouseX <= summary_button_x + summary_button_w) && mouseY >= summary_button_y && mouseY <= summary_button_y + summary_button_h);
 }
 void draw_graph() {
 
@@ -384,6 +430,11 @@ void draw_graph() {
   textAlign(LEFT, CENTER);
   text(uniqueDates.get(selectIndex), timeline_panel_x + timeline_panel_w - 30, graph_panel_y + 20 );
   popStyle();
+}
+void showStats(){
+  println(statistics.get(uniqueDates.get(selectIndex)).getAvgMood());
+  println(statistics.get(uniqueDates.get(selectIndex)).getFrequentEmotion());
+
 }
 void drawPointInfo(Point p) {
   float pointY = p.y;
@@ -455,9 +506,7 @@ void fileUnpackage() {
     if (!statistics.containsKey(date)) {
       statistics.put(date, new Daystats(date));
     }
-
     statistics.get(date).addObservation(obs);
-
     if (!graph_points.containsKey(date)) {
       graph_points.put(date, new ArrayList<Point>());
     }
@@ -469,6 +518,7 @@ void fileUnpackage() {
     }
     byDate.get(date).add(obs);
   }
+
   //Debug about how many observation been parsed
   println("There are:  " + (dear_data.length  - 1) + " observations" );
   uniqueDates.sort((a, b) -> {
@@ -486,7 +536,7 @@ void fileUnpackage() {
     return dayA - dayB;
   }
   );
-  // Sort dates arraylist to make them old->new sort
+
   total_days = uniqueDates.size();
 }
 void changeDayAnimation() {
@@ -498,7 +548,14 @@ void changeDayAnimation() {
 void keyPressed() {
   int idx = selectIndex;
   if (key == ' ') {
-    isLegendOn = !isLegendOn;
+    if (isLegendOn) {
+      isLegendOn = false;
+    } else {
+      if (isStatsOn) {
+        isStatsOn = false;
+      }
+      isLegendOn = true;
+    }
   }
   if (key == CODED) {
 
@@ -517,10 +574,15 @@ void mousePressed() {
   boolean isPointHit  = false;
 
   ArrayList<Point> current_points = graph_points.get(uniqueDates.get(selectIndex));
+
+
   if (isLegendHovered()) {
     isPointHit = true;
     if (isLegendOn) isLegendOn = false;
-    else isLegendOn = true;
+    else {
+      if (isStatsOn) isStatsOn = false;
+      isLegendOn = true;
+    }
   }
   for ( DayButton d : day_buttons) {
     if (d.isHovered) {
@@ -528,6 +590,16 @@ void mousePressed() {
 
       selectedPoint = null;
       changeDayAnimation();
+    }
+  }
+  if (isStatsHovered()) {
+    if (isStatsOn) {
+      isStatsOn = false;
+    } else {
+      if (isLegendOn) {
+        isLegendOn = false;
+      }
+      isStatsOn = true;
     }
   }
   for (Point d : current_points) {
