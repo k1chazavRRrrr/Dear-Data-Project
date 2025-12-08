@@ -61,18 +61,19 @@ float summary_button_w ;
 float summary_button_h;
 void setup() {
 
-  size(900, 700); // Resolution CAN be changed to more convenient
+  size(1400, 900); // Resolution CAN be changed to more convenient
   surface.setTitle("Dear Data – 100 Observations");
   left_panel_h = height - (left_panel_y * 2);
 
-  graph_panel_w = width - graph_panel_x  - left_panel_x;
+  graph_panel_w = width - graph_panel_x - left_panel_x;
   graph_panel_h = left_panel_h;
 
   timeline_panel_y = graph_panel_y + graph_panel_h - 125;
   timeline_panel_w = graph_panel_w - 100;
 
-  legend_button_x = graph_panel_x + graph_panel_w - 200;
+  legend_button_x = graph_panel_x + graph_panel_w - timeline_panel_w / 5;
   legend_button_y = timeline_panel_y + timeline_panel_h + 30;
+  legend_button_w = timeline_panel_w / 5 - 10;
   legend_button_h = graph_panel_y + graph_panel_h - (timeline_panel_y + timeline_panel_h) - 60 ;
 
   summary_button_x = timeline_panel_x + 10;
@@ -123,7 +124,7 @@ void createDayButtons() {
   for (int i = 0; i < total_days; i++) {
     int row = i % rowsPerCol;
     int col = i / rowsPerCol;
-    float x  = day_button_x + margin + col * ( margin + day_button_w);
+    float x = day_button_x + margin + col * ( margin + day_button_w);
     float y = day_button_y + margin + row * ( margin + day_button_h);
     day_buttons.add(new DayButton(x, y, day_button_w, day_button_h, i));
   }
@@ -186,7 +187,7 @@ void draw_gui() {
 }
 
 void legendButton() {
-  legend_button_w = timeline_panel_w / 5;
+
   pushStyle();
   noStroke();
   textAlign(CENTER, CENTER);
@@ -220,20 +221,75 @@ void summaryButton() {
   popStyle();
   if (isStatsOn) {
     summaryWindow();
-    showStats();
   }
 }
 void summaryWindow() {
   int padding = 10;
-  float summary_panel_x = graph_panel_x + padding;
+  float summary_panel_x = graph_panel_x + graph_panel_w/5;
   float summary_panel_y = graph_panel_y + padding;
   float summary_panel_h = graph_panel_h / 4;
-  float summary_panel_w =   graph_panel_w - (padding*2);
+  float summary_panel_w = graph_panel_w - (padding*2) - summary_panel_x;
   pushStyle();
   noStroke();
   fill(160, 120);
   rect(summary_panel_x, summary_panel_y, summary_panel_w, summary_panel_h, 5);
-    
+  fill(0, 120);
+
+  float current_day_section_x = summary_panel_x + padding ;
+  float current_day_section_y = summary_panel_y + padding;
+  float current_day_section_w = summary_panel_w * 0.5;
+  float current_day_section_h = summary_panel_h - padding*2;
+  //rect(current_day_section_x, current_day_section_y, current_day_section_w, current_day_section_h, 5);
+  fill(0);
+  textAlign(CENTER, CENTER);
+  text("Current Day Statistics", current_day_section_x + current_day_section_w/2, current_day_section_y);
+  String date = uniqueDates.get(selectIndex);
+  float tx = current_day_section_x + 15;
+  float ty = current_day_section_y + 30;
+  float gap = 20;
+  Daystats ds = statistics.get(date);
+  fill(0);
+  textAlign(LEFT, TOP);
+  textSize(12);
+
+  text("Average mood: " + ds.getAvgMood(), tx, ty);
+  ty += gap;
+
+  text("Most common emotion: " + ds.getFrequentEmotion(), tx, ty);
+  ty += gap;
+
+  text("Observations: " + ds.getCount(), tx, ty);
+  ty += gap;
+
+  text("Awake time: " + ds.getAwakeTime() + ":00", tx, ty);
+  ty += gap;
+
+  text("Bedtime: " + ds.getBedTime()+ ":00", tx, ty);
+    ds.debug();
+  float global_section_x = current_day_section_x + current_day_section_w + padding;
+  float global_section_y = current_day_section_y;
+  float global_section_w = summary_panel_w * 0.5 - padding*3;
+  float global_section_h = summary_panel_h - padding*2;
+  fill(0, 120);
+
+  fill(0);
+  textAlign(CENTER, CENTER);
+  text("Statistics for all Days", global_section_x + global_section_w/2, global_section_y);
+  textAlign(LEFT, TOP);
+  GlobalStats gs = new GlobalStats(statistics);
+  float gx = global_section_x + 15;
+  float gy = global_section_y + 30;
+  text("Global average mood: " + ceil(gs.getAvgMood()), gx, gy);
+  gy += gap;
+  text("Most common emotion: " + gs.getFrequentEmotion() + " (" + gs.getFrequentEmotionAmount() + ") ", gx, gy);
+  gy += gap;
+  text("Average Awake time: " + gs.getAvgAwakeTime() + ":00", gx, gy);
+  gy += gap;
+  text("Average Bedtime: " + gs.getAvgBedTime() + ":00", gx, gy);
+  gy += gap;
+  text("Best day: " + gs.getBestDay(), gx, gy);
+  gy += gap;
+  text("Worst day: " + gs.getWorstDay(), gx, gy);
   popStyle();
 }
 void legendInfo() {
@@ -250,7 +306,7 @@ void legendInfo() {
   float innerH = legend_panel_h - pad*2;
 
   float emotion_section_x = innerX + pad;
-  float emotion_section_y = innerY  + pad;
+  float emotion_section_y = innerY + pad;
   float emotion_section_w = innerW * 0.4 - pad*2;
   float emotion_section_h = innerH - pad*2;
 
@@ -288,8 +344,8 @@ void legendInfo() {
   //rect(activity_section_x,activity_section_y,activity_section_w,activity_section_h);
   fill(0);
   textAlign(CENTER, CENTER);
-  text("Emotions", legend_panel_x  + emotion_section_w / 2, legend_panel_y + 12);
-  text("Activities", legend_panel_x  + emotion_section_w + activity_section_w/2, legend_panel_y + 12);
+  text("Emotions", legend_panel_x + emotion_section_w / 2, legend_panel_y + 12);
+  text("Activities", legend_panel_x + emotion_section_w + activity_section_w/2, legend_panel_y + 12);
   text("Graph Instruction", legend_panel_x + emotion_section_w + activity_section_w + graph_instruction_section_w/ 2, legend_panel_y + 12);
 
   popStyle();
@@ -333,7 +389,7 @@ void legendInfo() {
   text("Life", lifeHeaderX, lifeHeaderY);
   for (int row = 0; row < life_rows; row++) {
     float x = activity_section_x + 0 * activitycellW + activitycellW/16 ;
-    float y = activity_section_y + row  * activitycellH + activitycellH * 1.2;
+    float y = activity_section_y + row * activitycellH + activitycellH * 1.2;
     text(life_activities[row][0] + " - " + life_activities[row][1], x, y);
   }
   fill(#3A86FF);
@@ -355,7 +411,7 @@ void legendInfo() {
 
   for (int i = 0; i < instructions.length; i++) {
     fill(0);
-    text(instructions[i], ix, iy  + padding);
+    text(instructions[i], ix, iy + padding);
     padding+= 20;
   }
   popStyle();
@@ -431,17 +487,13 @@ void draw_graph() {
   text(uniqueDates.get(selectIndex), timeline_panel_x + timeline_panel_w - 30, graph_panel_y + 20 );
   popStyle();
 }
-void showStats(){
-  println(statistics.get(uniqueDates.get(selectIndex)).getAvgMood());
-  println(statistics.get(uniqueDates.get(selectIndex)).getFrequentEmotion());
 
-}
 void drawPointInfo(Point p) {
   float pointY = p.y;
   float dash_size = 6;
   float dash_gap = 9;
   float startX = timeline_panel_x - 10;
-  float endX =   p.x;
+  float endX = p.x;
 
   for (float x = startX; x < endX - dash_gap; x+= dash_size + dash_gap) {
     line(x, pointY, x + dash_size, pointY);
@@ -486,7 +538,7 @@ void drawPointInfo(Point p) {
 }
 void fileUnpackage() {
   int MINIMUM_TOKENS = 6; // at least 6 entries in table
-  String[] dear_data = loadStrings("deardata_new.csv"); // All lines with  ,
+  String[] dear_data = loadStrings("deardata_new.csv"); // All lines with ,
 
   for (int i = 1; i < dear_data.length; i++) { // Through Words lines[i] - word
 
@@ -520,7 +572,7 @@ void fileUnpackage() {
   }
 
   //Debug about how many observation been parsed
-  println("There are:  " + (dear_data.length  - 1) + " observations" );
+  println("There are: " + (dear_data.length - 1) + " observations" );
   uniqueDates.sort((a, b) -> {
     String[] pa= a.split("/");
     String[] pb= b.split("/");
@@ -571,7 +623,7 @@ void keyPressed() {
   selectIndex = constrain(idx, 0, uniqueDates.size() - 1);
 }
 void mousePressed() {
-  boolean isPointHit  = false;
+  boolean isPointHit = false;
 
   ArrayList<Point> current_points = graph_points.get(uniqueDates.get(selectIndex));
 
