@@ -11,7 +11,7 @@ You can click any dot to display its detailed explanation.
 
 How to interact with the sketch:
 
- - Start the project (default size: 900×700, adjustable).
+ - Start the project (default size: 1100×900, adjustable).
  - The daily graph will appear. Press Space to toggle the “How to Read” panel.
  - Switch between days by clicking the menu buttons or using the Up/Down arrow keys.
  - Click any point on the graph to view its emotion and description.
