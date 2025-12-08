@@ -1,8 +1,22 @@
-How to read?
+ How to read?
 
- Points on Graph represents -> Emotions which I had during Actions(X-Axis) correspodning to my Mood from 0-10 on a Moodline (Y-Axis),
- for Instance, at 7:00, I felt Tired, During Morning and Overall Mood is 5.
- P.S New Feauture -> click on each dot on a graph, so Information above will appear.
+ This Processing sketch visualises 100 mood observations in the style of Dear Data.
+Each point on the graph represents an emotion felt during a specific action (X-axis) and its corresponding mood value from 0–10 (Y-axis).
+How to read the graph:
+The X-axis shows actions or moments throughout the day.
+The Y-axis shows mood level (0 = very low, 10 = very high).
+Each dot is an emotion experienced at that time/action.
+Example: at 07:00 I felt Tired during the morning routine, with an overall mood value of 5.
+You can click any dot to display its detailed explanation.
+
+How to interact with the sketch:
+
+ - Start the project (default size: 900×700, adjustable).
+ - The daily graph will appear. Press Space to toggle the “How to Read” panel.
+ - Switch between days by clicking the menu buttons or using the Up/Down arrow keys.
+ - Click any point on the graph to view its emotion and description.
+ - After viewing all days, open Statistics to see both daily and overall summaries.
+ 
  
  Idea
  
