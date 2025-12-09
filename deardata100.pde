@@ -61,7 +61,7 @@ float summary_button_w ;
 float summary_button_h;
 void setup() {
 
-  size(1400, 900); // Resolution CAN be changed to more convenient
+  size(1100, 900); // Resolution CAN be changed to more convenient
   surface.setTitle("Dear Data – 100 Observations");
   left_panel_h = height - (left_panel_y * 2);
 
