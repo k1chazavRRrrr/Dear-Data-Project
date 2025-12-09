@@ -265,7 +265,7 @@ void summaryWindow() {
   ty += gap;
 
   text("Bedtime: " + ds.getBedTime()+ ":00", tx, ty);
-    ds.debug();
+   
   float global_section_x = current_day_section_x + current_day_section_w + padding;
   float global_section_y = current_day_section_y;
   float global_section_w = summary_panel_w * 0.5 - padding*3;
