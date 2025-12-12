@@ -114,9 +114,11 @@ void draw() {
       isAnimating = false;
     }
   }
+  pushStyle();
   if (showHint) {
     drawClickHint();
   }
+  popStyle();
 }
 void drawClickHint() {
   String hint = "Click on any graph dot to see details!";
@@ -283,7 +285,7 @@ void summaryWindow() {
   ty += gap;
 
   text("Bedtime: " + ds.getBedTime()+ ":00", tx, ty);
-
+   
   float global_section_x = current_day_section_x + current_day_section_w + padding;
   float global_section_y = current_day_section_y;
   float global_section_w = summary_panel_w * 0.5 - padding*3;

@@ -40,7 +40,6 @@ class GlobalStats {
         emotionFreq.put(emo, emotionFreq.getOrDefault(emo, 0) + emoCount);
       }
 
-      // best/worst days
       if (average > bestDayMood) {
         bestDayMood = average;
         bestDay = d;
@@ -53,7 +52,6 @@ class GlobalStats {
 
     avgMood = totalMood / (float) totalCount;
 
-    // find most common emotion
     int top = 0;
     for (String e : emotionFreq.keySet()) {
       if (emotionFreq.get(e) > top) {
