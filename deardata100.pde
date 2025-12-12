@@ -16,11 +16,11 @@ int total_days = 0;
 int margin = 8;
 boolean isLegendOn = false;
 boolean isStatsOn = false;
-
+boolean showHint = true;
 boolean isAnimating = false;
+
 float animationA = 1;
 float animationB = animationA;
-float animationC = animationB - 0.1 * animationA;
 
 Point selectedPoint = null;
 
@@ -61,7 +61,7 @@ float summary_button_w ;
 float summary_button_h;
 void setup() {
 
-  size(1400, 900); // Resolution CAN be changed to more convenient
+  size(1100, 900); // Resolution CAN be changed to more convenient
   surface.setTitle("Dear Data – 100 Observations");
   left_panel_h = height - (left_panel_y * 2);
 
@@ -114,9 +114,27 @@ void draw() {
       isAnimating = false;
     }
   }
+  if (showHint) {
+    drawClickHint();
+  }
+}
+void drawClickHint() {
+  String hint = "Click on any graph dot to see details!";
+  textSize(14);
+  float padding = 12;
+  float w = textWidth(hint) + padding * 2;
+  float h = 32;
+  float x = graph_panel_x + graph_panel_w/2 - w/2;
+  float y = graph_panel_y + h/2;
+  pushStyle();
+  noStroke();
+  fill(0, 150);
+  rect(x, y, w, h, 8);
+  fill(255);
+  textAlign(CENTER, CENTER);
+  text(hint, x + w/2, y + h/2);
   popStyle();
 }
-
 void createDayButtons() {
   pushStyle();
   int rowsPerCol = 10;
@@ -265,7 +283,7 @@ void summaryWindow() {
   ty += gap;
 
   text("Bedtime: " + ds.getBedTime()+ ":00", tx, ty);
-    ds.debug();
+
   float global_section_x = current_day_section_x + current_day_section_w + padding;
   float global_section_y = current_day_section_y;
   float global_section_w = summary_panel_w * 0.5 - padding*3;
@@ -623,6 +641,7 @@ void keyPressed() {
   selectIndex = constrain(idx, 0, uniqueDates.size() - 1);
 }
 void mousePressed() {
+
   boolean isPointHit = false;
 
   ArrayList<Point> current_points = graph_points.get(uniqueDates.get(selectIndex));
@@ -657,6 +676,7 @@ void mousePressed() {
   for (Point d : current_points) {
     if (d.isHovered() && selectedPoint != d) {
       selectedPoint = d;
+      showHint = false;
       isPointHit = true;
     } else if (selectedPoint == d) {
       isPointHit = false;
