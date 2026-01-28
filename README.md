@@ -1,5 +1,6 @@
 DEAR DATA - VISUALISATION PROJECT - CREATIVE CODING MODULE
- How to read?
+
+How to read?
 
  This Processing sketch visualises 100 mood observations in the style of Dear Data.
 Each point on the graph represents an emotion felt during a specific action (X-axis) and its corresponding mood value from 0–10 (Y-axis).
