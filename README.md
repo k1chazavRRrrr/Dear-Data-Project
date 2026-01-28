@@ -1,3 +1,4 @@
+DEAR DATA - VISUALISATION PROJECT - CREATIVE CODING MODULE
  How to read?
 
  This Processing sketch visualises 100 mood observations in the style of Dear Data.
