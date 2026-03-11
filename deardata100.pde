@@ -81,7 +81,7 @@ void setup() {
   summary_button_w = timeline_panel_w / 5;
   summary_button_h = graph_panel_y + graph_panel_h - (timeline_panel_y + timeline_panel_h) - 60 ;
 
-  fileUnpackage();
+  apiLoader();
   createDayButtons();
   changeDayAnimation();
 }
@@ -267,7 +267,12 @@ void summaryWindow() {
   float tx = current_day_section_x + 15;
   float ty = current_day_section_y + 30;
   float gap = 20;
+  
   Daystats ds = statistics.get(date);
+  if (ds == null){
+    
+  return;
+  }
   fill(0);
   textAlign(LEFT, TOP);
   textSize(12);
@@ -285,7 +290,7 @@ void summaryWindow() {
   ty += gap;
 
   text("Bedtime: " + ds.getBedTime()+ ":00", tx, ty);
-   
+
   float global_section_x = current_day_section_x + current_day_section_w + padding;
   float global_section_y = current_day_section_y;
   float global_section_w = summary_panel_w * 0.5 - padding*3;
@@ -481,7 +486,7 @@ void draw_graph() {
     fill(0);
 
     if (!majorHours.contains(d.hour)) text(d.hour, d.x, timeline_panel_y + timeline_panel_h/2 - 20);
-    text(d.activity, d.x, timeline_panel_y + timeline_panel_h/2 + 15);
+    text(d.activity_short, d.x, timeline_panel_y + timeline_panel_h/2 + 15);
     popStyle();
     pushStyle();
 
@@ -556,24 +561,26 @@ void drawPointInfo(Point p) {
 
   popStyle();
 }
-void fileUnpackage() {
-  int MINIMUM_TOKENS = 6; // at least 6 entries in table
-  String[] dear_data = loadStrings("deardata_new.csv"); // All lines with ,
+void apiLoader() {
+    JSONArray dataSheet;
+    dataSheet = loadJSONArray("https://sheetdb.io/api/v1/fihpw4vfao5lh");
 
-  for (int i = 1; i < dear_data.length; i++) { // Through Words lines[i] - word
-
-    String[] tokens = split(dear_data[i], ",");
-    //Dividing line for exact tokens also skipping wrong ones
-    if (tokens.length < MINIMUM_TOKENS) continue;
-    String date = tokens[0];
-    String time[] = split(tokens[1], ":");
-    String hour = time[0];
-    String emotion = tokens[2];
-    String activity = tokens[3];
-    int overall_mood = int(tokens[4]);
-    String notes = tokens[5];
+  for (int i = 0; i < dataSheet.size(); i++) { // Through Words lines[i] - word
+    
+    JSONObject e = dataSheet.getJSONObject(i);
+    
+    String[] timestamp_tokens  = split(e.getString("timestamp"), " ");
+    
+      String emotion = e.getString("emotion");
+      String activity = e.getString("activity");
+      int overall_mood = Integer.parseInt(e.getString("overall_mood"));
+      String date = timestamp_tokens[0];
+      String[] time_tokens = split(timestamp_tokens[1], ":");
+      String hour = time_tokens[0];
+      if(!hourChanger(dataSheet, i, time_tokens)) continue;
     //Create an Object - Observation with tokens parameters
-    Observation obs = new Observation(date, hour, emotion, activity, overall_mood, notes);
+    Observation obs = new Observation(date, hour, emotion, activity, overall_mood);
+    
     //Making statement with Statistics Hashmap filling
     if (!statistics.containsKey(date)) {
       statistics.put(date, new Daystats(date));
@@ -592,7 +599,7 @@ void fileUnpackage() {
   }
 
   //Debug about how many observation been parsed
-  println("There are: " + (dear_data.length - 1) + " observations" );
+  println("There are: " + (dataSheet.size()) + " observations" );
   uniqueDates.sort((a, b) -> {
     String[] pa= a.split("/");
     String[] pb= b.split("/");
@@ -611,6 +618,22 @@ void fileUnpackage() {
 
   total_days = uniqueDates.size();
 }
+boolean hourChanger(JSONArray dataSheet,int i, String[] time_tokens){
+      int candidate_hour = Integer.parseInt(time_tokens[0]);
+
+   if (i != 0){
+     
+           JSONObject previous =  dataSheet.getJSONObject(i - 1);
+          String[] timestamp_tokens  = split(previous.getString("timestamp"), " ");
+          String[] previous_time_tokens  = split(timestamp_tokens[1], ":");
+          int previous_hour = Integer.parseInt(previous_time_tokens[0]);
+           if(candidate_hour == previous_hour) {
+             println(false);
+             return false;
+           }
+   }
+return true;
+}
 void changeDayAnimation() {
   animationA = 1;
   animationB = animationA - 0.1 *animationA;
@@ -627,6 +650,8 @@ void keyPressed() {
         isStatsOn = false;
       }
       isLegendOn = true;
+            showHint = false;
+
     }
   }
   if (key == CODED) {
@@ -655,10 +680,11 @@ void mousePressed() {
     else {
       if (isStatsOn) isStatsOn = false;
       isLegendOn = true;
+      showHint = false;
     }
   }
   for ( DayButton d : day_buttons) {
-    if (d.isHovered) {
+    if (d.isHoveredstatus) {
       selectIndex = d.idx;
 
       selectedPoint = null;
@@ -673,6 +699,7 @@ void mousePressed() {
         isLegendOn = false;
       }
       isStatsOn = true;
+      showHint = false;
     }
   }
   for (Point d : current_points) {

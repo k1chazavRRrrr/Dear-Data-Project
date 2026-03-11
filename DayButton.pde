@@ -8,7 +8,7 @@ class DayButton {
   float w;
   float h;
   int idx;
-  boolean isHovered = false;
+  boolean isHoveredstatus = false;
   DayButton(float x, float y, float w, float h, int idx) {
     this.x = x;
     this.y = y;
@@ -21,13 +21,13 @@ class DayButton {
   return (mouseX >= x && mouseX <= x + w && mouseY >= y  && mouseY <= y + h);
   }
   void update(){
-    isHovered = isHovered();
+    isHoveredstatus = isHovered();
   }
   void display(){
     if (selectIndex == idx){
       fill(activebutton);
     }
-      else if(isHovered){
+      else if(isHoveredstatus){
       fill(hoveredbutton);}
       else{
         fill(sleepbutton);

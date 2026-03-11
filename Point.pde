@@ -3,7 +3,7 @@ class Point {
   float y;
   int hour;
   String emotion;
-  String activity;
+  String activity_short;
   String activity_full;
   int overall_mood;
 
@@ -24,9 +24,9 @@ class Point {
   
   boolean isHovered = false;
   
-  Point(int hour, String activity, String emotion, int overall_mood) {
+  Point(int hour, String activity_full, String emotion, int overall_mood) {
     this.hour = hour;
-    this.activity = activity;
+    this.activity_full = activity_full;
     this.emotion = emotion;
     this.overall_mood = overall_mood;
     this.x = hourToX(hour);
@@ -66,50 +66,50 @@ class Point {
       this.emotion_color = other_emotion;
       break;
     }
-    switch(activity) {
-    case "mrn":
+    switch(activity_full) {
+    case "Morning routine":
     this.activity_color =  life_activity;
-    this.activity_full = "Morning";
+    this.activity_short = "mrn";
       break;
-    case "sh":
+    case "Shopping":
         this.activity_color =  life_activity;
-        this.activity_full = "Shopping";
+        this.activity_short = "sh";
 
       break;
-    case "evn":
+    case "Evening routine":
         this.activity_color =  life_activity;
-        this.activity_full = "Evening";
+        this.activity_short = "evn";
 
       break;
-    case "go":
+    case "Going out":
         this.activity_color =  life_activity;
-        this.activity_full = "Going out";
+        this.activity_full = "go";
 
       break;
-    case "ga":
+    case "Gaming":
         this.activity_color =  life_activity;
-        this.activity_full = "Gaming";
+        this.activity_short = "ga";
 
       break;
-    case "g":
+    case "Gym":
         this.activity_color =  life_activity;
-            this.activity_full = "Gym";
+            this.activity_short = "g";
       break;
 
-    case "le":
+    case "Lecture":
         this.activity_color = study_activity ;
-            this.activity_full = "Lecture";
+            this.activity_short = "l";
 
       break;
-    case "lt":
+    case "Lab/Tutorial":
           this.activity_color = study_activity ;
-          this.activity_full = "Lab/Tutorial";
+          this.activity_short = "lt";
 
 
       break;
-    case "st":
+    case "Study time":
             this.activity_color = study_activity ;
-              this.activity_full = "Study Time";
+              this.activity_short = "st";
 
       break;
     }

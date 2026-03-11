@@ -29,6 +29,7 @@ class GlobalStats {
 
     for (String d : stats.keySet()) {
       Daystats ds = stats.get(d);
+     
       float average = ds.getAvgMood();
       int count = ds.getCount();
 
@@ -64,7 +65,7 @@ class GlobalStats {
     int allBedTime = 0;
     for (String d : stats.keySet()) {
       Daystats ds = stats.get(d);
-      allAwakes += Integer.parseInt(ds.getAwakeTime());
+      allAwakes += Integer.parseInt(ds.getAwakeTime()); 
       allBedTime += Integer.parseInt(ds.getBedTime());
     }
     avgAwakeTime = floor(allAwakes / stats.size());
