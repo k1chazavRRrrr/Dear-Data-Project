@@ -15,11 +15,11 @@ class GlobalStats {
 
   HashMap<String, Integer> emotionFreq = new HashMap<>();
 
-  GlobalStats(HashMap<String, Daystats> stats) {
+  GlobalStats(ArrayList<Daystats> stats) {
     calculate(stats);
   }
 
-  void calculate(HashMap<String, Daystats> stats) {
+  void calculate(ArrayList<Daystats> stats) {
 
     int totalMood = 0;
     int totalCount = 0;
@@ -27,27 +27,27 @@ class GlobalStats {
     bestDayMood = 0;
     worstDayMood = 11;
 
-    for (String d : stats.keySet()) {
-      Daystats ds = stats.get(d);
+    for (Daystats d : stats) {
+      
      
-      float average = ds.getAvgMood();
-      int count = ds.getCount();
+      float average = d.getAvgMood();
+      int count = d.getCount();
 
       totalMood += average * count;
       totalCount += count;
 
-      for (String emo : ds.avgEmotion.keySet()) {
-        int emoCount = ds.avgEmotion.get(emo);
+      for (String emo : d.avgEmotion.keySet()) {
+        int emoCount = d.avgEmotion.get(emo);
         emotionFreq.put(emo, emotionFreq.getOrDefault(emo, 0) + emoCount);
       }
 
       if (average > bestDayMood) {
         bestDayMood = average;
-        bestDay = d;
+        bestDay = d.date;
       }
       if (average < worstDayMood) {
         worstDayMood = average;
-        worstDay = d;
+        worstDay = d.date;
       }
     }
 
@@ -63,10 +63,10 @@ class GlobalStats {
     }
     int allAwakes = 0;
     int allBedTime = 0;
-    for (String d : stats.keySet()) {
-      Daystats ds = stats.get(d);
-      allAwakes += Integer.parseInt(ds.getAwakeTime()); 
-      allBedTime += Integer.parseInt(ds.getBedTime());
+    for (Daystats d : stats) {
+      
+      allAwakes += Integer.parseInt(d.getAwakeTime()); 
+      allBedTime += Integer.parseInt(d.getBedTime());
     }
     avgAwakeTime = floor(allAwakes / stats.size());
     avgBedTime = floor(allBedTime / stats.size());
