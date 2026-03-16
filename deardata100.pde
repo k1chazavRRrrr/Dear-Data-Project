@@ -3,6 +3,8 @@ import java.util.*;
 /// DATA
 //////////
 ArrayList<DayButton> day_buttons = new ArrayList<>();//To store Button object and work with them
+HashSet<Integer> majorHours = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
+
 DataManager data;
 
 //////////
@@ -106,6 +108,7 @@ void draw() {
   draw_graph();
   legendButton();
   summaryButton();
+  refreshTip();
   if (isAnimating) {
     pushStyle();
     noStroke();
@@ -158,7 +161,7 @@ void createDayButtons() {
     int col = i / rowsPerCol;
     float x = day_button_x + margin + col * ( margin + day_button_w);
     float y = day_button_y + margin + row * ( margin + day_button_h);
-    day_buttons.add(new DayButton(x, y, day_button_w, day_button_h, i));
+    day_buttons.add(new DayButton(x, y, day_button_w, day_button_h, data.getDate(i)));
   }
   popStyle();
 }
@@ -190,9 +193,11 @@ void draw_gui() {
   line(moodline_x, yBot, moodline_x, yTop);
   popStyle();
   pushStyle();
+  ArrayList<Point> refPoints = data.getDayPoints(selectIndex);
+  if (refPoints.size() == 0) return;
 
   for (int i = 1; i <= 10; i++) {
-    float moodline_tick_y = data.getDayPoints(0).get(0).moodToY(i);
+    float moodline_tick_y = refPoints.get(0).moodToY(i);
     //float moodline_tick_y = graph_points.get(uniqueDates.get(0)).get(0).moodToY(i);
     float moodline_tick_x = moodline_x - 5;
     line(moodline_tick_x, moodline_tick_y, moodline_tick_x + 10, moodline_tick_y);
@@ -217,11 +222,19 @@ void draw_gui() {
   noStroke();
   for ( DayButton d : day_buttons) {
     d.update();
-    d.display();
+    d.display(data.getDate(selectIndex));
   }
   popStyle();
 }
+void refreshTip() {
+  float refresh_tip_x = summary_button_x + summary_button_w + 30;
+  float refresh_tip_y = summary_button_y + summary_button_h/2;
 
+
+  fill(0);
+  textSize(14);
+  text("Press R - to refresh the data!", refresh_tip_x, refresh_tip_y);
+}
 void legendButton() {
 
   pushStyle();
@@ -283,9 +296,9 @@ void summaryWindow() {
   float tx = current_day_section_x + 15;
   float ty = current_day_section_y + 30;
   float gap = 20;
-  
+
   Daystats ds = data.getDayStats(selectIndex);
-  
+
   fill(0);
   textAlign(LEFT, TOP);
   textSize(12);
@@ -471,7 +484,6 @@ void draw_graph() {
   strokeWeight(2);
   stroke(120);
 
-  HashSet<Integer> majorHours = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
   for (int i = 0; i <= 24; i+=6) {
     float tx = timeline_panel_x + (i /25.0) * timeline_panel_w;
     line(tx, timeline_panel_y-5, tx, timeline_panel_y+timeline_panel_h + 5);
@@ -482,7 +494,15 @@ void draw_graph() {
   popStyle();
 
   ArrayList<Point> current_points = data.getDayPoints(selectIndex);
-
+  for(Point d : current_points){
+    println(d.emotion + " " + d.activity_short);
+  }
+  //println(data.getDayPoints(selectIndex));
+  if (current_points == null || current_points.isEmpty()) {
+    
+    println("No data!");
+    return;
+  }
   pushStyle();
   stroke(120);
   strokeWeight(4);
@@ -579,23 +599,8 @@ void drawPointInfo(Point p) {
   popStyle();
 }
 
-boolean hourChanger(JSONArray dataSheet,int i, String[] time_tokens){
-      int candidate_hour = Integer.parseInt(time_tokens[0]);
-
-   if (i != 0){
-     
-           JSONObject previous =  dataSheet.getJSONObject(i - 1);
-          String[] timestamp_tokens  = split(previous.getString("timestamp"), " ");
-          String[] previous_time_tokens  = split(timestamp_tokens[1], ":");
-          int previous_hour = Integer.parseInt(previous_time_tokens[0]);
-           if(candidate_hour == previous_hour) {
-             println(false);
-             return false;
-           }
-   }
-return true;
-}
 void changeDayAnimation() {
+  if (isAnimating) return;
   animationA = 1;
   animationB = animationA - 0.1 *animationA;
   isAnimating = true;
@@ -611,8 +616,7 @@ void keyPressed() {
         isStatsOn = false;
       }
       isLegendOn = true;
-            showHint = false;
-
+      showHint = false;
     }
   }
   if (key == CODED) {
@@ -627,6 +631,17 @@ void keyPressed() {
     selectedPoint = null;
   }
   selectIndex = constrain(idx, 0, data.getAllDates().size() - 1);
+  if (key == 'r' || key == 'R') {
+    refreshData();
+  }
+}
+void refreshData() {
+  data.refreshData();
+
+  day_buttons.clear();
+  createDayButtons();
+
+  changeDayAnimation();
 }
 void mousePressed() {
 
@@ -646,7 +661,7 @@ void mousePressed() {
   }
   for ( DayButton d : day_buttons) {
     if (d.isHoveredstatus) {
-      selectIndex = d.idx;
+      selectIndex = data.getDate(d.date);
 
       selectedPoint = null;
       changeDayAnimation();

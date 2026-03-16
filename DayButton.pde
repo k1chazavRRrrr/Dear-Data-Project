@@ -7,14 +7,14 @@ class DayButton {
   float y;
   float w;
   float h;
-  int idx;
+  String date;
   boolean isHoveredstatus = false;
-  DayButton(float x, float y, float w, float h, int idx) {
+  DayButton(float x, float y, float w, float h, String date) {
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
-    this.idx = idx;
+    this.date = date;
   }
   
   boolean isHovered(){
@@ -23,8 +23,8 @@ class DayButton {
   void update(){
     isHoveredstatus = isHovered();
   }
-  void display(){
-    if (selectIndex == idx){
+  void display(String selectedDate){
+    if (selectedDate.equals(this.date)){
       fill(activebutton);
     }
       else if(isHoveredstatus){
@@ -35,6 +35,7 @@ class DayButton {
     rect(x, y, w, h, 6);
      fill(text_color);
      textAlign(CENTER, CENTER);
-     text("Day - " + (idx + 1), x + w/2, y + h/2);
+     
+     text(this.date, x + w/2, y + h/2);
   }
 }

@@ -83,7 +83,7 @@ class Point {
       break;
     case "Going out":
         this.activity_color =  life_activity;
-        this.activity_full = "go";
+        this.activity_short = "go";
 
       break;
     case "Gaming":
