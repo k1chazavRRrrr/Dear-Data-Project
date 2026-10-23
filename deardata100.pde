@@ -1,18 +1,23 @@
 import java.util.*;
-//Data Structures
-ArrayList<String> uniqueDates = new ArrayList<String>();
-// To Sort dates in order from (Oldest first to newest dates)
-HashMap<String, ArrayList<Observation>> byDate = new HashMap<>();
-// To Store all Observations according to Date - Observation
-HashMap<String, Daystats> statistics = new HashMap<>();
-// To store Statistics for a certain day, eg date - overall_mood
-ArrayList<DayButton> day_buttons = new ArrayList<>();
-//To store Button object and work with them
-HashMap<String, ArrayList<Point>> graph_points = new HashMap<>();
+//////////
+/// DATA
+//////////
+ArrayList<DayButton> day_buttons = new ArrayList<>();//To store Button object and work with them
+HashSet<Integer> majorHours = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
 
+DataManager data;
 
+//////////
+/// UI STATE
+//////////
 int selectIndex = 0; // Index to choose date
 int total_days = 0;
+
+
+//////////
+/// LAYOUT
+//////////
+
 int margin = 8;
 boolean isLegendOn = false;
 boolean isStatsOn = false;
@@ -59,6 +64,10 @@ float summary_button_x ;
 float summary_button_y ;
 float summary_button_w ;
 float summary_button_h;
+
+//////////
+/// SETUP
+//////////
 void setup() {
 
   size(1100, 900); // Resolution CAN be changed to more convenient
@@ -81,10 +90,15 @@ void setup() {
   summary_button_w = timeline_panel_w / 5;
   summary_button_h = graph_panel_y + graph_panel_h - (timeline_panel_y + timeline_panel_h) - 60 ;
 
-  fileUnpackage();
+  data = new DataManager();
   createDayButtons();
   changeDayAnimation();
 }
+
+
+//////////
+/// DRAW
+//////////
 void draw() {
   pushStyle();
   background(bground);
@@ -94,6 +108,7 @@ void draw() {
   draw_graph();
   legendButton();
   summaryButton();
+  refreshTip();
   if (isAnimating) {
     pushStyle();
     noStroke();
@@ -146,10 +161,13 @@ void createDayButtons() {
     int col = i / rowsPerCol;
     float x = day_button_x + margin + col * ( margin + day_button_w);
     float y = day_button_y + margin + row * ( margin + day_button_h);
-    day_buttons.add(new DayButton(x, y, day_button_w, day_button_h, i));
+    day_buttons.add(new DayButton(x, y, day_button_w, day_button_h, data.getDate(i)));
   }
   popStyle();
 }
+//////////
+/// UI
+//////////
 void draw_gui() {
   pushStyle();
   noStroke();
@@ -175,9 +193,12 @@ void draw_gui() {
   line(moodline_x, yBot, moodline_x, yTop);
   popStyle();
   pushStyle();
+  ArrayList<Point> refPoints = data.getDayPoints(selectIndex);
+  if (refPoints.size() == 0) return;
 
   for (int i = 1; i <= 10; i++) {
-    float moodline_tick_y = graph_points.get(uniqueDates.get(0)).get(0).moodToY(i);
+    float moodline_tick_y = refPoints.get(0).moodToY(i);
+    //float moodline_tick_y = graph_points.get(uniqueDates.get(0)).get(0).moodToY(i);
     float moodline_tick_x = moodline_x - 5;
     line(moodline_tick_x, moodline_tick_y, moodline_tick_x + 10, moodline_tick_y);
     fill(0);
@@ -201,11 +222,19 @@ void draw_gui() {
   noStroke();
   for ( DayButton d : day_buttons) {
     d.update();
-    d.display();
+    d.display(data.getDate(selectIndex));
   }
   popStyle();
 }
+void refreshTip() {
+  float refresh_tip_x = summary_button_x + summary_button_w + 30;
+  float refresh_tip_y = summary_button_y + summary_button_h/2;
 
+
+  fill(0);
+  textSize(14);
+  text("Press R - to refresh the data!", refresh_tip_x, refresh_tip_y);
+}
 void legendButton() {
 
   pushStyle();
@@ -263,11 +292,13 @@ void summaryWindow() {
   fill(0);
   textAlign(CENTER, CENTER);
   text("Current Day Statistics", current_day_section_x + current_day_section_w/2, current_day_section_y);
-  String date = uniqueDates.get(selectIndex);
+  //String date = uniqueDates.get(selectIndex);
   float tx = current_day_section_x + 15;
   float ty = current_day_section_y + 30;
   float gap = 20;
-  Daystats ds = statistics.get(date);
+
+  Daystats ds = data.getDayStats(selectIndex);
+
   fill(0);
   textAlign(LEFT, TOP);
   textSize(12);
@@ -285,7 +316,7 @@ void summaryWindow() {
   ty += gap;
 
   text("Bedtime: " + ds.getBedTime()+ ":00", tx, ty);
-   
+
   float global_section_x = current_day_section_x + current_day_section_w + padding;
   float global_section_y = current_day_section_y;
   float global_section_w = summary_panel_w * 0.5 - padding*3;
@@ -296,7 +327,7 @@ void summaryWindow() {
   textAlign(CENTER, CENTER);
   text("Statistics for all Days", global_section_x + global_section_w/2, global_section_y);
   textAlign(LEFT, TOP);
-  GlobalStats gs = new GlobalStats(statistics);
+  GlobalStats gs = new GlobalStats(data.getAllStats());
   float gx = global_section_x + 15;
   float gy = global_section_y + 30;
   text("Global average mood: " + ceil(gs.getAvgMood()), gx, gy);
@@ -443,13 +474,16 @@ boolean isLegendHovered() {
 boolean isStatsHovered() {
   return ((mouseX >= summary_button_x && mouseX <= summary_button_x + summary_button_w) && mouseY >= summary_button_y && mouseY <= summary_button_y + summary_button_h);
 }
+
+//////////
+/// GRAPH
+//////////
 void draw_graph() {
 
   pushStyle();
   strokeWeight(2);
   stroke(120);
 
-  HashSet<Integer> majorHours = new HashSet<Integer>(Arrays.asList(0, 6, 12, 18, 24));
   for (int i = 0; i <= 24; i+=6) {
     float tx = timeline_panel_x + (i /25.0) * timeline_panel_w;
     line(tx, timeline_panel_y-5, tx, timeline_panel_y+timeline_panel_h + 5);
@@ -459,8 +493,16 @@ void draw_graph() {
   }
   popStyle();
 
-  ArrayList<Point> current_points = graph_points.get(uniqueDates.get(selectIndex));
-
+  ArrayList<Point> current_points = data.getDayPoints(selectIndex);
+  for(Point d : current_points){
+    println(d.emotion + " " + d.activity_short);
+  }
+  //println(data.getDayPoints(selectIndex));
+  if (current_points == null || current_points.isEmpty()) {
+    
+    println("No data!");
+    return;
+  }
   pushStyle();
   stroke(120);
   strokeWeight(4);
@@ -481,7 +523,7 @@ void draw_graph() {
     fill(0);
 
     if (!majorHours.contains(d.hour)) text(d.hour, d.x, timeline_panel_y + timeline_panel_h/2 - 20);
-    text(d.activity, d.x, timeline_panel_y + timeline_panel_h/2 + 15);
+    text(d.activity_short, d.x, timeline_panel_y + timeline_panel_h/2 + 15);
     popStyle();
     pushStyle();
 
@@ -504,7 +546,7 @@ void draw_graph() {
   textSize(20);
   fill(0);
   textAlign(LEFT, CENTER);
-  text(uniqueDates.get(selectIndex), timeline_panel_x + timeline_panel_w - 30, graph_panel_y + 20 );
+  text(data.getDate(selectIndex), timeline_panel_x + timeline_panel_w - 30, graph_panel_y + 20 );
   popStyle();
 }
 
@@ -556,62 +598,9 @@ void drawPointInfo(Point p) {
 
   popStyle();
 }
-void fileUnpackage() {
-  int MINIMUM_TOKENS = 6; // at least 6 entries in table
-  String[] dear_data = loadStrings("deardata_new.csv"); // All lines with ,
 
-  for (int i = 1; i < dear_data.length; i++) { // Through Words lines[i] - word
-
-    String[] tokens = split(dear_data[i], ",");
-    //Dividing line for exact tokens also skipping wrong ones
-    if (tokens.length < MINIMUM_TOKENS) continue;
-    String date = tokens[0];
-    String time[] = split(tokens[1], ":");
-    String hour = time[0];
-    String emotion = tokens[2];
-    String activity = tokens[3];
-    int overall_mood = int(tokens[4]);
-    String notes = tokens[5];
-    //Create an Object - Observation with tokens parameters
-    Observation obs = new Observation(date, hour, emotion, activity, overall_mood, notes);
-    //Making statement with Statistics Hashmap filling
-    if (!statistics.containsKey(date)) {
-      statistics.put(date, new Daystats(date));
-    }
-    statistics.get(date).addObservation(obs);
-    if (!graph_points.containsKey(date)) {
-      graph_points.put(date, new ArrayList<Point>());
-    }
-    graph_points.get(date).add(new Point(Integer.parseInt(hour), activity, emotion, overall_mood));
-    //Making statement with day's Observations Hashmap filling
-    if (!byDate.containsKey(date)) {
-      byDate.put(date, new ArrayList<Observation>());
-      uniqueDates.add(date);
-    }
-    byDate.get(date).add(obs);
-  }
-
-  //Debug about how many observation been parsed
-  println("There are: " + (dear_data.length - 1) + " observations" );
-  uniqueDates.sort((a, b) -> {
-    String[] pa= a.split("/");
-    String[] pb= b.split("/");
-
-    int dayA = Integer.parseInt(pa[0]);
-    int monthA = Integer.parseInt(pa[1]);
-
-    int dayB = Integer.parseInt(pb[0]);
-    int monthB = Integer.parseInt(pb[1]);
-    if (monthA != monthB) {
-      return monthA - monthB;
-    }
-    return dayA - dayB;
-  }
-  );
-
-  total_days = uniqueDates.size();
-}
 void changeDayAnimation() {
+  if (isAnimating) return;
   animationA = 1;
   animationB = animationA - 0.1 *animationA;
   isAnimating = true;
@@ -627,6 +616,7 @@ void keyPressed() {
         isStatsOn = false;
       }
       isLegendOn = true;
+      showHint = false;
     }
   }
   if (key == CODED) {
@@ -640,13 +630,24 @@ void keyPressed() {
     }
     selectedPoint = null;
   }
-  selectIndex = constrain(idx, 0, uniqueDates.size() - 1);
+  selectIndex = constrain(idx, 0, data.getAllDates().size() - 1);
+  if (key == 'r' || key == 'R') {
+    refreshData();
+  }
+}
+void refreshData() {
+  data.refreshData();
+
+  day_buttons.clear();
+  createDayButtons();
+
+  changeDayAnimation();
 }
 void mousePressed() {
 
   boolean isPointHit = false;
 
-  ArrayList<Point> current_points = graph_points.get(uniqueDates.get(selectIndex));
+  ArrayList<Point> current_points = data.getDayPoints(selectIndex);
 
 
   if (isLegendHovered()) {
@@ -655,11 +656,12 @@ void mousePressed() {
     else {
       if (isStatsOn) isStatsOn = false;
       isLegendOn = true;
+      showHint = false;
     }
   }
   for ( DayButton d : day_buttons) {
-    if (d.isHovered) {
-      selectIndex = d.idx;
+    if (d.isHoveredstatus) {
+      selectIndex = data.getDate(d.date);
 
       selectedPoint = null;
       changeDayAnimation();
@@ -673,6 +675,7 @@ void mousePressed() {
         isLegendOn = false;
       }
       isStatsOn = true;
+      showHint = false;
     }
   }
   for (Point d : current_points) {

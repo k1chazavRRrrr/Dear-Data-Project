@@ -51,11 +51,16 @@ class Daystats {
   }
   String getAwakeTime() {
     calculate();
-    return activitiesToTime.get("mrn");
+    String t = activitiesToTime.get("Morning routine");
+    if (t == null) return "0";
+     return t;
+    
   }
   String getBedTime() {
     calculate();
-    return activitiesToTime.get("evn");
+    String t = activitiesToTime.get("Evening routine");
+    if (t == null) return "0";
+     return t;
   }
   void debug() {
     for (String e : avgEmotion.keySet()) {
